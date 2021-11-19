@@ -1,19 +1,37 @@
 import mongoose from 'mongoose';
 
-const connection = {};
+const MONGODB_URI = process.env.MONGO_DB;
+
+if(!MONGODB_URI) {
+  throw new Error('MongoDB URI must be provided');
+}
+
+let cached = global.mongoose
+
+if(!cached) {
+  cached = global.mongoose = {conn: null, promise: null};
+}
 
 async function dbConnect() {
-    if (connection.isConnected) {
-      return;
+  if(cached.conn) {
+    return cached.conn;
+  }
+  
+  if(!cached.promise){
+    const opts = {
+      bufferCommands: false,
     }
 
-    const db = await mongoose.connect(process.env.MONGO_DB, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose;
     });
 
-    connection.isConnected = db.connections[0].readyState;
-    console.log(connection.isConnected);
+  }
+
+  cached.conn = await cached.promise;
+
+  return cached.conn;
+
 }
 
 
