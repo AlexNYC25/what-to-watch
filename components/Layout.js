@@ -44,7 +44,7 @@ export default function Layout(props) {
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faCheck} />
                         </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
+                        <Link href="/watchlist" color="inherit" underline="none">
                             <ListItemText primary="Watchlist" />
                         </Link>
                     </ListItem>
@@ -52,7 +52,7 @@ export default function Layout(props) {
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faStar} />
                         </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
+                        <Link href="/favorites" color="inherit" underline="none">
                             <ListItemText primary="Favorites" />
                         </Link>
                     </ListItem>
@@ -85,8 +85,8 @@ export default function Layout(props) {
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faSearch} />
                         </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
-                            <ListItemText primary="Search" />
+                        <Link href="/search" color="inherit" underline="none">
+                            <ListItemText primary="Search"/>
                         </Link>
                     </ListItem>
                 </List>
