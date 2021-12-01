@@ -1,35 +1,17 @@
 import styles from '../styles/Home.module.css'
 
-import { TextField, Grid } from '@mui/material'
+import { Container } from '@mui/material'
+import React from 'react'
 
-export default function Home() {
+import Layout from '../components/Layout'
+
+export default function Home({Component, pageProps}) {
+
   return (
-    <Grid container justifyContent="center" alignItems="center" direction="row" id='login-section' className={styles.container}>
-      <Grid container alignItems="center" direction="column">
-        <div>
-          <p>What to Watch</p>
-        </div>
-        <Grid item>
-          <TextField
-            id="username-field"
-            label="Username"
-            variant="outlined"
-            className={styles.textField}
-            fullWidth
-            required
-          />
-
-          <TextField
-            id="password-field"
-            label="Password"
-            variant="outlined"
-            className={styles.textField}
-            fullWidth
-            required
-          />  
-
-        </Grid>
-      </Grid>   
-    </Grid>
+    <Layout>
+      <Container sx={{mt:10, mb:5}}>
+        <p>Welcome to What To Watch</p>
+      </Container>
+    </Layout>
   )  
 }
