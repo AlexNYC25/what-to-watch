@@ -1,0 +1,12 @@
+#API respond standards:
+
+    API responses must include
+        A Status code in line with https standards (i.e. 200, 400)
+        A short message explaining what happened in the API transaction in a json object
+            {message: {...}}
+
+    Optional:
+        Data may be included if needed, labled as "data"
+            {data: {...}}
+        User details may also be included such as watchlist, favorites information
+            {userDetails: {...}}
