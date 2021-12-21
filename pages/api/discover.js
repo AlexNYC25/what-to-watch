@@ -15,7 +15,7 @@ let getTrendingTV = () => {
 
 export default function getDiscover(req, res) {
     if(req.method !== 'GET') {
-        res.status(405).end();
+        res.status(405).json({message: 'Method not allowed'});
     }
 
     getTrendingMovies()
@@ -27,9 +27,9 @@ export default function getDiscover(req, res) {
                         tvShows: tvShows
                     });
                 })
-                .catch(error => console.log(error));
+                .catch(error => res.status(500).json({message: 'Error getting trending TV shows'}));
         })
-        .catch(error => console.log(error))
+        .catch(error => res.status(500).json({message: 'Error getting trending movies'}));
         
 
 }
