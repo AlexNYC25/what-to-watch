@@ -150,9 +150,17 @@ export default function Search() {
                         onClick={handlePageBack} 
                         disabled={pageNumber <= 1 ? true : false}
                     >
-                        <FontAwesomeIcon icon={faArrowLeft} />
+                        <FontAwesomeIcon 
+                            icon={faArrowLeft}
+                            color="#77ABBD"
+                        />
                     </IconButton>
-                    <Typography variant="h6" color="textSecondary" component="p">
+                    <Typography
+                        id="search-page-arrows-text"
+                        variant="h6" 
+                        color="textSecondary" 
+                        component="p"
+                    >
                         Page {pageNumber} of {totalPages}
                     </Typography>
                     <IconButton 
@@ -160,7 +168,10 @@ export default function Search() {
                         onClick={handlePageForward}
                         disabled={pageNumber >= totalPages ? true : false}
                     >
-                        <FontAwesomeIcon icon={faArrowRight} />
+                        <FontAwesomeIcon 
+                            icon={faArrowRight} 
+                            color="#77ABBD"
+                        />
                     </IconButton>
             </Box>
             
