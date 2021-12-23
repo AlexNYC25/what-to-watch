@@ -5,11 +5,13 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { AppBar, Divider, IconButton, Link, Toolbar, Typography } from '@mui/material';
+import { AppBar, Divider, IconButton, Toolbar, Typography } from '@mui/material';
 
 import { useUser } from '@auth0/nextjs-auth0'
 
 import React from 'react';
+
+import Link from 'next/link';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
@@ -28,6 +30,35 @@ export default function Layout(props) {
         setMobileOpen(!mobileOpen);
     };
 
+    const drawerConstantItems = (
+        <div>
+            <ListItem button key="discover">
+                <ListItemIcon>
+                    <FontAwesomeIcon icon={faBookOpen} />
+                </ListItemIcon>
+                <Link href={'/discover'} >
+                    <ListItemText primary="Discover" />
+                </Link>
+            </ListItem>
+            <ListItem button key="topRated">
+                <ListItemIcon>
+                    <FontAwesomeIcon icon={faAward} />
+                </ListItemIcon>
+                <Link href={'/topRated'}>
+                    <ListItemText primary="Top Rated" />
+                </Link>
+            </ListItem>
+            <ListItem button key="search">
+                <ListItemIcon>
+                    <FontAwesomeIcon icon={faSearch} />
+                </ListItemIcon>
+                <Link href={'/search'}>
+                    <ListItemText primary="Search"/>
+                </Link>
+            </ListItem>
+        </div>
+    )
+
     let drawerItems = () => {
         if(user) {
             return (
@@ -36,15 +67,15 @@ export default function Layout(props) {
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faUser} />
                         </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
+
                             <ListItemText primary="Profile" />
-                        </Link>
+                        
                     </ListItem>
                     <ListItem button key="watchlist">
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faCheck} />
                         </ListItemIcon>
-                        <Link href="/watchlist" color="inherit" underline="none">
+                        <Link href={'/watchlist'}>
                             <ListItemText primary="Watchlist" />
                         </Link>
                     </ListItem>
@@ -52,7 +83,7 @@ export default function Layout(props) {
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faStar} />
                         </ListItemIcon>
-                        <Link href="/favorites" color="inherit" underline="none">
+                        <Link href={'/favorites'}>
                             <ListItemText primary="Favorites" />
                         </Link>
                     </ListItem>
@@ -60,35 +91,12 @@ export default function Layout(props) {
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faSignOutAlt} />
                         </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
+                        <Link href={'/logout'}>
                             <ListItemText primary="Logout" />
                         </Link>
                     </ListItem>
                     <Divider />
-                    <ListItem button key="discover">
-                        <ListItemIcon>
-                            <FontAwesomeIcon icon={faBookOpen} />
-                        </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
-                            <ListItemText primary="Discover" />
-                        </Link>
-                    </ListItem>
-                    <ListItem button key="topRated">
-                        <ListItemIcon>
-                            <FontAwesomeIcon icon={faAward} />
-                        </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
-                            <ListItemText primary="Top Rated" />
-                        </Link>
-                    </ListItem>
-                    <ListItem button key="search">
-                        <ListItemIcon>
-                            <FontAwesomeIcon icon={faSearch} />
-                        </ListItemIcon>
-                        <Link href="/search" color="inherit" underline="none">
-                            <ListItemText primary="Search"/>
-                        </Link>
-                    </ListItem>
+                    {drawerConstantItems}
                 </List>
             )
         } else {
@@ -98,42 +106,21 @@ export default function Layout(props) {
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faSignInAlt} />
                         </ListItemIcon>
-                        <Link href="/api/auth/login" color="inherit" underline="none">
+                        
+                        <Link href={"/api/auth/login"}>
                             <ListItemText primary="Log In" />
                         </Link>
+                        
                     </ListItem>
                     <Divider />
-                    <ListItem button key="discover">
-                        <ListItemIcon>
-                            <FontAwesomeIcon icon={faBookOpen} />
-                        </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
-                            <ListItemText primary="Discover" />
-                        </Link>
-                    </ListItem>
-                    <ListItem button key="topRated">
-                        <ListItemIcon>
-                            <FontAwesomeIcon icon={faAward} />
-                        </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
-                            <ListItemText primary="Top Rated" />
-                        </Link>
-                    </ListItem>
-                    <ListItem button key="search">
-                        <ListItemIcon>
-                            <FontAwesomeIcon icon={faSearch} />
-                        </ListItemIcon>
-                        <Link href="" color="inherit" underline="none">
-                            <ListItemText primary="Search" />
-                        </Link>
-                    </ListItem>
+                    {drawerConstantItems}
                 </List>
             )
         }
     }
 
     const drawer = (
-        <div>
+        <div id="sidebar-box">
             <Toolbar />
             <Divider />
                 {drawerItems()}
@@ -145,7 +132,7 @@ export default function Layout(props) {
     const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box  sx={{ display: 'flex' }}>
             <AppBar
                 position="fixed"
                 sx={{
@@ -153,7 +140,7 @@ export default function Layout(props) {
                     ml: { sm: `${drawerWidth}px` },
                 }}
             >
-                <Toolbar>
+                <Toolbar id="logo-toolbar">
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
@@ -169,12 +156,15 @@ export default function Layout(props) {
                 </Toolbar>
             </AppBar>
             <Box
+                id='nav-box'
                 component="nav"
                 sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
                 aria-label="mailbox folders"
             >
                 {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
                 <Drawer
+                    id="mobile-drawer"
+                    className="sidebar-box-drawer"
                     container={container}
                     variant="temporary"
                     open={mobileOpen}
@@ -190,6 +180,8 @@ export default function Layout(props) {
                     {drawer}
                 </Drawer>
                 <Drawer
+                    id="desktop-drawer"
+                    className="sidebar-box-drawer"
                     variant="permanent"
                     sx={{
                         display: { xs: 'none', sm: 'block' },
