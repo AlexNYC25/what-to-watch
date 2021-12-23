@@ -1,0 +1,53 @@
+
+html, body {
+    background-color: #1d3557;
+}
+
+#logo-toolbar {
+    background-color: #457B9D;
+}
+
+#nav-box {
+    border-right: #1d3557 1px solid;
+}
+
+#sidebar-box {
+    background-color: #386480;
+    color: #ffffff;
+    height: 100%;
+}
+
+.sidebar-box-drawer .MuiDrawer-paper{
+    border: none;
+}
+
+#search-options{
+    background-color: #f1faee;
+}
+
+#search-submit{
+    background-color: #1d3557;
+}
+
+#search-submit-button{
+    background-color: #457B9D
+}
+
+.search-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.search-card-image {
+    height: 100%;
+    width: 100%;
+}
+
+.search-card-text {
+    background-color: #A8DADC;
+}
+
+#search-page-arrows-text {
+    color: #77ABBD;
+}
