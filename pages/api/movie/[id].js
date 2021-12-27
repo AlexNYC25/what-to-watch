@@ -7,7 +7,6 @@ let getMovieDetails = async (id) => {
     } catch (error) {
         return error;
     }
-
 }
 
 let getMovieRecommendations = async (id) => {
@@ -65,19 +64,24 @@ let gatherMovieData = async (id) => {
 }
 
 export default function movie(req, res) {
-    if(req.method !== "GET") {
-        return res.status(405).json({message: "Method not allowed"});
-    }
-
-    const id = req.query.id;
-
-    gatherMovieData(id)
-        .then(data => {
-            res.status(200).json({data: data, message: "Movie data retrieved successfully"});
-        })
-        .catch(error => {
-            res.status(500).json({error: error, message: "An error occured while retrieving movie data"});
-        });
-
+    return new Promise((resolve, reject) => {
+        if(req.method !== "GET") {
+            return res.status(405).json({message: "Method not allowed"});
+            reject();
+        }
+    
+        const id = req.query.id;
+    
+        gatherMovieData(id)
+            .then(data => {
+                res.status(200).json({data: data, message: "Movie data retrieved successfully"});
+                resolve();
+            })
+            .catch(error => {
+                res.status(500).json({error: error, message: "An error occured while retrieving movie data"});
+                reject();
+            });
+    
+    })
 
 }
