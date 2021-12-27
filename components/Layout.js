@@ -177,7 +177,7 @@ export default function Layout(props) {
                         '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
                     }}
                 >
-                    {drawer}
+                    {drawer}                                                                
                 </Drawer>
                 <Drawer
                     id="desktop-drawer"
