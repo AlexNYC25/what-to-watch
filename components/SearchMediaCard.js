@@ -24,15 +24,7 @@ export default function SearchMediaCard(props) {
                     title={props.title}
                 />
 
-                <CardContent className='search-card-text'>
-                    <Typography
-                        varient="body2"
-                        component="p"
-                        color="textSecondary"
-                    >
-                        {props.title}
-                    </Typography>
-                </CardContent>
+                
             </Card>
         </Link>
     );
