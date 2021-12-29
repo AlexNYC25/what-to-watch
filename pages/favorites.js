@@ -1,8 +1,10 @@
 let axios = require('axios').default
 
-import { Button, Card, Container, Grid, CardMedia, CardContent, Typography } from '@mui/material';
+import { Button, Container, Grid} from '@mui/material';
 import { useEffect, useState } from 'react';
+
 import Layout from '../components/Layout';
+import FavoritesCard from '../components/FavoritesCard';
 
 export default function Favorites() {
 
@@ -44,58 +46,20 @@ export default function Favorites() {
             </Container>
 
             <Container>
-                <h2>Movies </h2>
+                <h2 className="favorites-media-heading">Movies </h2>
                 <Grid container spacing={2}>
                     
                     {movieFavorites && movieFavorites.map(movie => (
-                        <Grid item xs={6} md={3} lg={2} xl={2} key={movie.id} style={{disply: 'flex'}}>
-                            <Card sx={{maxWidth: 345}} style={{display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
-                                <CardMedia
-                                    component="img" 
-                                    //image={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
-                                    image={movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : 'https://via.placeholder.com/300x450?text=Movie+Not+Found'}
-                                    style={{height: '100%', width: '100%'}}
-                                    title={movie.title}
-                                />
-
-                                <CardContent >
-                                    <Typography variant="body2" color="textSecondary" component="p">
-                                        {movie.title ? movie.title : movie.name}
-                                    </Typography>
-                                </CardContent>
-
-                            </Card>
-                        </Grid>
+                        <FavoritesCard mediaType="movie" id={movie.id} title={movie.title} imagePath={movie.poster_path} />
                     ))}
                 </Grid>
             </Container>
 
             <Container>
-                <h2>TV Shows </h2>
-
+                <h2 className="favorites-media-heading">TV Shows </h2>
                 <Grid container spacing={2}>
-                    
                     {tvFavorites && tvFavorites.map(tv => (
-                        
-                        <Grid item xs={6} md={3} lg={2} xl={2} key={tv.id} style={{disply: 'flex'}}>
-                            <Card sx={{maxWidth: 345}} style={{display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
-                                <CardMedia
-                                    component="img" 
-                                    //image={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
-                                    image={tv.poster_path ? `https://image.tmdb.org/t/p/w500/${tv.poster_path}` : 'https://via.placeholder.com/300x450?text=Movie+Not+Found'}
-                                    style={{height: '100%', width: '100%'}}
-                                    title={tv.name}
-                                />
-
-                                <CardContent >
-                                    <Typography variant="body2" color="textSecondary" component="p">
-                                        {tv.name ? tv.name : tv.title}
-                                    </Typography>
-                                    
-                                </CardContent>
-
-                            </Card>
-                        </Grid>
+                        <FavoritesCard mediaType="tvShow" id={tv.id} title={tv.name} imagePath={tv.poster_path} />
                     ))}
                 </Grid>
             </Container>
