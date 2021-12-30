@@ -1,44 +1,44 @@
 import axios from 'axios';
 
-let getTvShowDetails = (id) => {
+let getTvShowDetails = async (id) => {
     try {
-        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`);
+        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US`);
         return response.data;
     } catch(error){
         return error;
     }
 }
 
-let getTvShowRecomndations = (id) => {
+let getTvShowRecommendations = async (id) => {
     try {
-        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}/recommendations?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=1`);
+        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}/recommendations?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`);
         return response.data;
     } catch(error){
         return error;
     }
 }
 
-let getTvShowCredits = (id) => {
+let getTvShowCredits = async (id) => {
     try {
-        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}/credits?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`);
+        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}/credits?api_key=${process.env.TMDB_API_KEY}&language=en-US`);
         return response.data;
     } catch(error){
         return error;
     }
 }
 
-let getTvShowWatchProviders = (id) => {
+let getTvShowWatchProviders = async (id) => {
     try {
-        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}/external_ids?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`);
+        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}/watch/providers?api_key=${process.env.TMDB_API_KEY}&language=en-US`);
         return response.data;
     } catch(error){
         return error;
     }
 }
 
-let getTvShowVideos = (id) => {
+let getTvShowVideos = async (id) => {
     try {
-        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}/videos?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`);
+        const response = await axios.get(`https://api.themoviedb.org/3/tv/${id}/videos?api_key=${process.env.TMDB_API_KEY}&language=en-US`);
         return response.data;
     } catch(error){
         return error;
@@ -46,37 +46,55 @@ let getTvShowVideos = (id) => {
 }
 
 
-let gatherTvShowData = (id) => {
-    return Promise.all([
+let gatherTvShowData = async (id) => {
+    const tvShowData = await Promise.all([
         getTvShowDetails(id),
-        getTvShowRecomndations(id),
+        getTvShowRecommendations(id),
         getTvShowCredits(id),
         getTvShowWatchProviders(id),
         getTvShowVideos(id)
-    ]).then(values => {
-        return {
-            tvShow: values[0],
-            recomndations: values[1],
-            credits: values[2],
-            watchProviders: values[3],
-            videos: values[4]
-        }
-    })
-}
+    ])
 
-export default function tvShow(req, res) {
-    if(req.method !== 'GET') {
-        return res.status(405).json({message: 'Method not allowed'});
+    return {
+        tvShow: tvShowData[0],
+        recommendations: tvShowData[1],
+        credits: tvShowData[2],
+        watchProviders: tvShowData[3],
+        videos: tvShowData[4]
     }
 
-    const id = req.params.id;
+}
 
-    gatherTvShowData(id)
-        .then(data => {
-            res.status(200).json({data: data, message: 'Tv show data successfully gathered'});
-        })
-        .catch(error => {
-            res.status(500).json({error: error, message: 'Error while gathering tv show data'});
-        })
+/*
+    GET /api/tvShow/[id]
+    Query:
+        - id
+    Response:
+        - status code
+        - data
+        - message
+    Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
+*/
+export default async function tvShow(req, res) {
+
+    return new Promise((resolve, reject) => {
+        if(req.method !== 'GET') {
+            return res.status(405).json({message: 'Method not allowed'});
+        }
+    
+        const id = req.query.id;
+    
+        gatherTvShowData(id)
+            .then(data => {
+                res.status(200).json({data: data, message: 'Tv show data successfully gathered'});
+                resolve();
+            })
+            .catch(error => {
+                res.status(500).json({error: error, message: 'Error while gathering tv show data'});
+                reject();
+            })
+    })
+
+
     
 }
