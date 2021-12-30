@@ -42,39 +42,49 @@ let searchTV = async (query, page) => {
     Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
 */
 export default function search(req, res) {
-	const { query, mediaType, pageNumber } = req.query;
+
+	return new Promise((resolve, reject) => {
+		const { query, mediaType, pageNumber } = req.query;
 	
-  	if(!query) {
-		res.status(400).json({
-	  		error: 'Missing query'
-		});
-  	}
+		if(!query) {
+		  res.status(400).json({
+				error: 'Missing query'
+		  });
+		}
+  
+		if(req.method === 'GET') {
+			if(mediaType === 'movie') {
+				searchMovie(query, pageNumber)
+					.then(data => {
+						res.status(200).json({message: 'Query successful', data: data});
+						resolve();
+					})
+					.catch(error => {
+						res.status(500).json({
+							error: error,
+							message: 'Query failed'
+						});
+						reject();
+					});
+			} else {
+				searchTV(query, pageNumber)
+					.then(data => {
+						res.status(200).json({message: 'Query successful', data: data});
+					})
+					.catch(error => {
+						res.status(500).json({
+							error: error,
+							message: 'Query failed'
+						});
+					});
+			}
+		}
+		else {
+			res.status(405).json({message: 'Method not allowed'});
+		}
+	})
 
-  if(req.method === 'GET') {
 
-	if(mediaType === 'movie') {
-		searchMovie(query, pageNumber)
-			.then(data => {
-				res.status(200).json({message: 'query successful', data: data});
-			})
-			.catch(error => {
-				res.status(500).json({
-					error: error
-				});
-			});
-	} else {
-		searchTV(query, pageNumber)
-			.then(data => {
-				res.status(200).json({message: 'query successful', data: data});
-			})
-			.catch(error => {
-				res.status(500).json({
-					error: error
-				});
-			});
-	}
-
-  }
 
 
 }
