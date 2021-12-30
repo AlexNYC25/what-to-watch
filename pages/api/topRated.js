@@ -22,24 +22,32 @@ let getTopRatedTvShows = () => {
 }
 
 export default function getTopRated(req, res) {
-    if(req.method !== "GET") {
-        res.status(405).json({message: "Method not allowed"});
-    }
-    
-    getTopRatedMovies()
-        .then((movies) => {
-            getTopRatedTvShows()
-            .then((tvShows) => {
-                res.json({
-                    movies: movies,
-                    tvShows: tvShows
-                });
+
+    return new Promise((resolve, reject) => {
+        if(req.method !== "GET") {
+            return res.status(405).json({message: "Method not allowed"});
+        }
+        
+        getTopRatedMovies()
+            .then((movies) => {
+                getTopRatedTvShows()
+                .then((tvShows) => {
+                    res.status(200).json({
+                        movies: movies,
+                        tvShows: tvShows
+                    });
+                    resolve();
+                })
+                .catch((err) => {
+                    res.status(500).json({error: err, message: "Error getting top rated tv shows"});
+                    reject();
+                })
             })
             .catch((err) => {
-                res.status(500).json({message: "Error getting top rated tv shows"});
-            })
-        })
-        .catch((err) => {
-            res.status(500).json({message: "Error getting top rated movies"});
-        });
+                res.status(500).json({error: err, message: "Error getting top rated movies"});
+                reject();
+            });
+    });
+
+
 }
