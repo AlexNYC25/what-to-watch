@@ -14,44 +14,59 @@ import User from "../../../models/User";
     Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
 */
 export default withApiAuthRequired(async function removeWatchlistMovie(req, res) {
-    if (req.method !== "POST") {
-        res.status(405).end();
-    }
+
+    return new Promise((resolve, reject) => {
+        if (req.method !== "POST") {
+            return res.status(405).json({ message: "Method not allowed" });
+        }
+        
+        await dbConnect();
     
-    await dbConnect();
-
-    const mediaId = req.body.mediaId;
-    const session = getSession(req, res);
-
-    const userId = session.user.name;
-
-    User.findOne({
-        where: {
+        const mediaId = req.body.mediaId;
+        const session = getSession(req, res);
+    
+        const userId = session.user.name;
+    
+        User.find({
             email: userId
-        }
-    })
-    .then(user => {
-        // check if the user has that media id in their watchlist
-        if(user.movieWatchlist.includes(mediaId)){
-            user.movieWatchlist.filter(movie => movie !== mediaId);
-        }
+        })
+        .then(user => {
 
-        user.save()
-        .then(() => {
-            res.status(200).json({
-                message: "Movie removed from watchlist"
+            // create empty array if watchlist dosent exist
+            if(!user.movieWatchlist){
+                user.movieWatchlist = []
+            }
+
+            // check if the user has that media id in their watchlist
+            if(user.movieWatchlist.includes(mediaId)){
+                user.movieWatchlist.filter(movie => movie !== mediaId);
+            }
+    
+            user.save()
+            .then(() => {
+                res.status(200).json({
+                    message: "Movie removed from watchlist"
+                });
+                resolve();
+            })
+            .catch(err => {
+                res.status(500).json({
+                    error: err,
+                    message: "Error removing movie from watchlist"
+                });
+                reject();
             });
         })
         .catch(err => {
             res.status(500).json({
-                message: err.message
+                error: err,
+                message: "Error in user database"
             });
-        });
-    })
-    .catch(err => {
-        res.status(500).json({
-            message: err.message
+            reject();
         });
     });
+
+
+
 
 });
