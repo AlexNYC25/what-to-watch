@@ -14,22 +14,35 @@ let getTrendingTV = () => {
 }
 
 export default function getDiscover(req, res) {
-    if(req.method !== 'GET') {
-        res.status(405).json({message: 'Method not allowed'});
-    }
 
-    getTrendingMovies()
-        .then(movies => {
-            getTrendingTV()
-                .then(tvShows => {
-                    return res.status(200).json({
-                        movies: movies,
-                        tvShows: tvShows
+    return new Promise((resolve, reject) => {
+        if(req.method !== 'GET') {
+            res.status(405).json({message: 'Method not allowed'});
+            reject();
+        }
+    
+        getTrendingMovies()
+            .then(movies => {
+                getTrendingTV()
+                    .then(tvShows => {
+                        res.status(200).json({
+                            movies: movies,
+                            tvShows: tvShows
+                        });
+                        resolve();
+                    })
+                    .catch(error => {
+                        res.status(500).json({error: error, message: 'Error getting trending TV shows'})
+                        reject();
                     });
-                })
-                .catch(error => res.status(500).json({message: 'Error getting trending TV shows'}));
-        })
-        .catch(error => res.status(500).json({message: 'Error getting trending movies'}));
+            })
+            .catch(error => {
+                res.status(500).json({error: error, message: 'Error getting trending movies'})
+                reject();
+            });
+    });
+
+
         
 
 }
