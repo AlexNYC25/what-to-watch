@@ -15,44 +15,55 @@ import User from "../../../models/User";
 */
 export default withApiAuthRequired(async function removeWatchlistTvShow(req, res) {
 
-    if(req.method !== "POST") {
-        return res.status(405).json({
-            message: "Method not allowed"
-        });
-    }
-
-    await dbConnect();
-
-    const mediaId = req.body.mediaId;
-
-    const session = getSession(req, res);
-    const userId  = session.user.name;
-
-    User.findOne({
-        where: {
-            id: userId
+    return new Promise((resolve, reject) => {
+        if(req.method !== "POST") {
+            return res.status(405).json({
+                message: "Method not allowed"
+            });
         }
-    }).then(user => {
-        // check if the user has that media id in thier watchlist
-        if(user.tvShowWatchlist.includes(mediaId)) {
-            user.tvShowWatchlist.filter(id => id !== mediaId);
-        }
-
-        user.save()
-        .then(() => {
-            res.status(200).json({
-                message: "tv show removed from watchlist"
-            });   
+    
+        await dbConnect();
+    
+        const mediaId = req.body.mediaId;
+    
+        const session = getSession(req, res);
+        const userId  = session.user.name;
+    
+        User.find({
+            email: userId
+        }).then(user => {
+    
+            // create empty array if watchlist dosent exist
+            if(!user.tvShowWatchlist){
+                user.tvShowWatchlist = []
+            }
+    
+            // check if the user has that media id in thier watchlist
+            if(user.tvShowWatchlist.includes(mediaId)) {
+                user.tvShowWatchlist.filter(id => id !== mediaId);
+            }
+    
+            user.save()
+            .then(() => {
+                res.status(200).json({
+                    message: "tv show removed from watchlist"
+                }); 
+                resolve();  
+            })
+            .catch(err => {
+                res.status(500).json({
+                    error: err,
+                    message: "Error removing tv show from watchlist"
+                });
+                reject();
+            })
         })
         .catch(err => {
             res.status(500).json({
-                message: "Error removing tv show from watchlist"
+                error: err,
+                message: "Error querying user database"
             });
-        })
-    })
-    .catch(err => {
-        res.status(500).json({
-            message: err.message
+            reject();
         });
     });
 
