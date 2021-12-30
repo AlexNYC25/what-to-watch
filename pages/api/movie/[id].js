@@ -63,11 +63,21 @@ let gatherMovieData = async (id) => {
     };
 }
 
+/*
+    GET /api/movie/[id]
+    Query:
+        - id
+    Response:
+        - status code
+        - data
+        - message
+    Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
+*/
 export default function movie(req, res) {
     return new Promise((resolve, reject) => {
+        // Only allow GET requests
         if(req.method !== "GET") {
             return res.status(405).json({message: "Method not allowed"});
-            reject();
         }
     
         const id = req.query.id;
