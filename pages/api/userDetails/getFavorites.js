@@ -51,57 +51,74 @@ let getTvShowDetails = (tvShowId) => {
 */
 export default withApiAuthRequired( async function getFavorites(req, res) {
 
-    if(req.method !== "GET") {
-        res.status(405).end();
-    }
-
-    await dbConnect();
-
-    const session = getSession(req, res);
-    const userId = session.user.name;
-
-    User.findOne({
-        where: {
+    return new Promise((resolve, reject) => {
+        if(req.method !== "GET") {
+            res.status(405).json({message: "Method not allowed"});
+        }
+    
+        await dbConnect();
+    
+        const session = getSession(req, res);
+        const userId = session.user.name;
+    
+        User.find({
             email: userId
-        }
-    }).then(user => {
-
-        let movieFavorites = user.favoriteMovies;
-        let tvShowFavorites = user.favoriteTvShows;
-
-        let movieDetails = [];
-        let tvShowDetails = [];
-
-        let moviePromises = [];
-        let tvShowPromises = [];
-
-        for(let i = 0; i < movieFavorites.length; i++) {
-            moviePromises.push(getMovieDetails(movieFavorites[i]));
-        }
-
-        for(let i = 0; i < tvShowFavorites.length; i++) {
-            tvShowPromises.push(getTvShowDetails(tvShowFavorites[i]));
-        }
-
-
-        Promise.all(moviePromises).then(values => {
-            movieDetails = values;
-
-            Promise.all(tvShowPromises).then(values => {
-                tvShowDetails = values;
-
-                res.status(200).json({
-                    movieFavorites: movieDetails,
-                    tvShowFavorites: tvShowDetails
+        }).then(user => {
+    
+            let movieFavorites = user.favoriteMovies;
+            let tvShowFavorites = user.favoriteTvShows;
+    
+            let movieDetails = [];
+            let tvShowDetails = [];
+    
+            let moviePromises = [];
+            let tvShowPromises = [];
+    
+            for(let i = 0; i < movieFavorites.length; i++) {
+                moviePromises.push(getMovieDetails(movieFavorites[i]));
+            }
+    
+            for(let i = 0; i < tvShowFavorites.length; i++) {
+                tvShowPromises.push(getTvShowDetails(tvShowFavorites[i]));
+            }
+    
+    
+            Promise.all(moviePromises).then(values => {
+                movieDetails = values;
+    
+                Promise.all(tvShowPromises).then(values => {
+                    tvShowDetails = values;
+    
+                    res.status(200).json({
+                        movieFavorites: movieDetails,
+                        tvShowFavorites: tvShowDetails
+                    });
+                    resolve();
+                })
+                .catch(error => {
+                    res.status(500).json({
+                        error: error,
+                        message: "Error getting tv show details"
+                    });
+                })
+            })
+            .catch(error => {
+                res.status(500).json({
+                    error: error,
+                    message: "Error getting movie details"
                 });
             })
+    
+            
+        }).catch(error => {
+            res.status(500).json({
+                error: error,
+                message: "Error querying database"
+            });
+            reject();
         });
+    })
 
-        
-    }).catch(error => {
-        res.status(500).json({
-            error: error
-        });
-    });
+
 
 }); 
