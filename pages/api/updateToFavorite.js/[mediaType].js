@@ -14,75 +14,102 @@ import dbConnect from "../../../util/dbConnect";
     Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
 */
 export default withApiAuthRequired(async function updateMovieToFavorite(req, res) {
-    if(req.method !== "POST") {
-        res.status(405).end();
-    }
 
-    let mediaType = req.query
-
-    await dbConnect();
-
-    const session = await getSession(req, res);
-    const userId = session.user.name;
-
-    let mediaId = req.body.mediaId
-
-    User.findOne({
-        where: {
-            email: userId
+    return new Promise((resolve, reject) => {
+        if(req.method !== "POST") {
+            res.status(405).json({message: "Method not allowed"});
         }
-    })
-    .then(user => {
-
-        if(mediaType === "movie"){
-            if(!user.favoriteMovies.includes(mediaId)) {
-                user.favoriteMovies.push(mediaId);
-                user.movieWatchlist = movieWatchlist.filter(movie => movie !== mediaId);
     
-            } else {
-                return res.status(400).json({
-                    message: "Movie already in favorites"
-                });
-            }
-        }
-        else if(mediaType === "tv"){
-            if(!user.favoriteTvShows.includes(mediaId)) {
-                user.favoriteTvShows.push(mediaId);
-                user.tvShowWatchlist = tvShowWatchlist.filter(movie => movie !== mediaId);
-            } else {
-                return res.status(400).json({
-                    message: "Tv Show already in favorites"
-                });
-            }
-        }
+        let mediaType = req.query
+    
+        await dbConnect();
+    
+        const session = await getSession(req, res);
+        const userId = session.user.name;
+    
+        let mediaId = req.body.mediaId
+    
+        User.find({
+            email: userId
+        })
+        .then(user => {
 
-        
+            // create empty array if favoriteMovies dosent exist
+            if(!user.favoriteMovies){
+                user.favoriteMovies = []
+            }
 
-        user.save()
-        .then(() => {
+            // create empty array if favoriteTvShows dosent exist
+            if(!user.favoriteTvShows){
+                user.favoriteTvShows = []
+            }
+
+            // create empty array if moviews dosent exist
+            if(!user.movieWatchlist){
+                user.movieWatchlist = []
+            }
+
+            // create empty array if tvShows dosent exist
+            if(!user.tvShowWatchlist){
+                user.tvShowWatchlist = []
+            }
+    
             if(mediaType === "movie"){
-                return res.status(200).json({
-                    message: "Movie added to favorites"
-                });
+                if(!user.favoriteMovies.includes(mediaId)) {
+                    user.favoriteMovies.push(mediaId);
+                    user.movieWatchlist = movieWatchlist.filter(movie => movie !== mediaId);
+        
+                } else {
+                    return res.status(400).json({
+                        message: "Movie already in favorites"
+                    });
+                }
             }
             else if(mediaType === "tv"){
-                return res.status(200).json({
-                    message: "Tv Show added to favorites"
-                });
+                if(!user.favoriteTvShows.includes(mediaId)) {
+                    user.favoriteTvShows.push(mediaId);
+                    user.tvShowWatchlist = tvShowWatchlist.filter(movie => movie !== mediaId);
+                } else {
+                    return res.status(400).json({
+                        message: "Tv Show already in favorites"
+                    });
+                }
             }
+    
+            
+    
+            user.save()
+            .then(() => {
+                if(mediaType === "movie"){
+                    res.status(200).json({
+                        message: "Movie added to favorites"
+                    });
+                    resolve();
+                }
+                else if(mediaType === "tv"){
+                    res.status(200).json({
+                        message: "Tv Show added to favorites"
+                    });
+                    resolve();
+                }
+            })
+            .catch(err => {
+                res.status(500).json({
+                    message: "Error adding media to favorites",
+                    error: err
+                });
+                reject();
+            });
+    
         })
         .catch(err => {
             res.status(500).json({
-                message: "Error adding media to favorites",
-                error: err
-            });
+                error: err,
+                message: "Error updating media to favorite"
+            })
+            reject();
         });
-
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({
-            message: "Error updating media to favorite"
-        })
     });
+
+
 })
