@@ -52,7 +52,7 @@ let getTvShowDetails = (tvShowId) => {
 */
 export default withApiAuthRequired(async function getWatchlist(req, res) {
     if(req.method !== "GET") {
-        res.status(405).end();
+        return res.status(405).json({message: "Method not allowed"});
     }
 
     await dbConnect();
@@ -60,12 +60,11 @@ export default withApiAuthRequired(async function getWatchlist(req, res) {
     const session = await getSession(req, res);
     const userId = session.user.name;
 
-    User.findOne({
-        where: {
-            email: userId
-        }
+    await User.find({
+        'email': userId
     })
     .then(user => {
+        //console.log(user);
         let movieWatchlist = user.movieWatchlist;
         let tvShowWatchlist = user.tvShowWatchlist;
 
@@ -99,8 +98,9 @@ export default withApiAuthRequired(async function getWatchlist(req, res) {
         })
     }).catch(error => {
         console.log(error);
-        res.status(500).json({
-            error: error
+        return res.status(500).json({
+            error: error,
+            message: "Error querying user database"
         })
     })
     
