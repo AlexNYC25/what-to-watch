@@ -1,0 +1,24 @@
+@use '../abstracts/colors';
+
+#app-container {
+    background-color: colors.$primary-background;
+    height: 100%;
+}
+
+#logo-toolbar {
+    background-color: colors.$third-background;
+}
+
+#nav-box {
+    border-right: #1D3557 1px solid;
+}
+
+#sidebar-box {
+    background-color: #386480;
+    color: #ffffff;
+    height: 100%;
+}
+
+.sidebar-box-drawer .MuiDrawer-paper{
+    border: none;
+}

@@ -1,0 +1,16 @@
+
+.card-image {
+    height: 100%;
+    width: 100%;
+}
+
+.actor-card-image {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.media-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

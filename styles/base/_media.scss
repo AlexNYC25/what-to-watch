@@ -1,0 +1,10 @@
+@use '../abstracts/colors';
+
+#media-container {
+    color: colors.$primary-text;
+}
+
+.media-icon-buttons {
+    color: colors.$primary-text;
+    width: 50%;
+}

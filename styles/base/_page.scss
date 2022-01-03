@@ -1,0 +1,6 @@
+@use '../abstracts/colors';
+
+html, body {
+    background-color: colors.$primary-background;
+    height: 100%;
+}

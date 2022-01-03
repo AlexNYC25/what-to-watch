@@ -1,0 +1,32 @@
+@use "../abstracts/colors";
+
+#search-page {
+    height: 100%;
+}
+
+#search-options {
+    background-color: colors.$heading-text;
+}
+
+#search-submit {
+    background-color: colors.$primary-background;
+}
+
+#search-submit-button {
+    background-color: #457B9D;
+}
+
+.search-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#search-page-nav {
+    color: colors.$primary-text;
+
+    button, p {
+        color: colors.$primary-text;
+    }
+
+}
