@@ -50,58 +50,65 @@ let getTvShowDetails = (tvShowId) => {
         - message
     Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
 */
-export default withApiAuthRequired(async function getWatchlist(req, res) {
-    if(req.method !== "GET") {
-        return res.status(405).json({message: "Method not allowed"});
-    }
+export default withApiAuthRequired(function getWatchlist(req, res) {
 
-    await dbConnect();
-
-    const session = await getSession(req, res);
-    const userId = session.user.name;
-
-    await User.find({
-        'email': userId
-    })
-    .then(user => {
-        //console.log(user);
-        let movieWatchlist = user.movieWatchlist;
-        let tvShowWatchlist = user.tvShowWatchlist;
-
-        let movieDetails = [];
-        let tvShowDetails = [];
-
-        let moviePromises = [];
-        let tvShowPromises = [];
-
-        for(let i = 0; i < movieWatchlist.length; i++) {
-            moviePromises.push(getMovieDetails(movieWatchlist[i]));
+    return new Promise((resolve, reject) => {
+        if(req.method !== "GET") {
+            return res.status(405).json({message: "Method not allowed"});
         }
-
-        for(let i = 0; i < tvShowWatchlist.length; i++) {
-            tvShowPromises.push(getTvShowDetails(tvShowWatchlist[i]));
-        }
-
-        Promise.all(moviePromises)
-        .then(values => {
-            movieDetails = values;
-
-            Promise.all(tvShowPromises)
-            .then(values => {
-                tvShowDetails = values;
-
-                res.status(200).json({
-                    movieWatchlist: movieDetails,
-                    tvShowWatchlist: tvShowDetails
+    
+        dbConnect();
+    
+        const session = getSession(req, res);
+        const userId = session.user.name;
+    
+        User.findOne({
+            'email': userId
+        })
+        .then(user => {
+            //console.log(user);
+            let movieWatchlist = user.movieWatchlist;
+            let tvShowWatchlist = user.tvShowWatchlist;
+    
+            let movieDetails = [];
+            let tvShowDetails = [];
+    
+            let moviePromises = [];
+            let tvShowPromises = [];
+    
+            for(let i = 0; i < movieWatchlist.length; i++) {
+                moviePromises.push(getMovieDetails(movieWatchlist[i]));
+            }
+    
+            for(let i = 0; i < tvShowWatchlist.length; i++) {
+                tvShowPromises.push(getTvShowDetails(tvShowWatchlist[i]));
+            }
+    
+            Promise.all(moviePromises)
+                .then(values => {
+                    movieDetails = values;
+        
+                    Promise.all(tvShowPromises)
+                    .then(values => {
+                        tvShowDetails = values;
+        
+                        res.status(200).json({
+                            movieWatchlist: movieDetails,
+                            tvShowWatchlist: tvShowDetails
+                        })
+                        resolve();
+                    })
                 })
-            })
+                .catch(error => {
+                    console.log(error);
+                    return res.status(500).json({
+                        error: error,
+                        message: "Error querying user database"
+                    })
+                })
         })
-    }).catch(error => {
-        console.log(error);
-        return res.status(500).json({
-            error: error,
-            message: "Error querying user database"
-        })
-    })
+    });
+
+
     
 });
