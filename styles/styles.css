@@ -44,9 +44,18 @@ html, body {
     width: 100%;
 }
 
-.search-card-text {
-    background-color: #A8DADC;
+.search-page-nav{
+    color: #1D3557;
 }
+
+.search-page-nav p {
+    color: #1D3557;
+}
+
+.search-page-nav button {
+    color: #1D3557;
+}
+
 
 #search-page-arrows-text {
     color: #77ABBD;
