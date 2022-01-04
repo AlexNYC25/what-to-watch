@@ -5,6 +5,10 @@
 }
 
 .media-icon-buttons {
-    color: colors.$primary-text;
+    color: #386480;
     width: 50%;
+
+    &:hover {
+        color: colors.$primary-text;
+    }
 }
