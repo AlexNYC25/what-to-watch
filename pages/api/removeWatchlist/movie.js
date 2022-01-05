@@ -13,21 +13,21 @@ import User from "../../../models/User";
         - message
     Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
 */
-export default withApiAuthRequired(async function removeWatchlistMovie(req, res) {
+export default withApiAuthRequired(function removeWatchlistMovie(req, res) {
 
     return new Promise((resolve, reject) => {
         if (req.method !== "POST") {
             return res.status(405).json({ message: "Method not allowed" });
         }
         
-        await dbConnect();
+        dbConnect();
     
         const mediaId = req.body.mediaId;
         const session = getSession(req, res);
     
         const userId = session.user.name;
     
-        User.find({
+        User.findOne({
             email: userId
         })
         .then(user => {
@@ -50,7 +50,7 @@ export default withApiAuthRequired(async function removeWatchlistMovie(req, res)
                 resolve();
             })
             .catch(err => {
-                res.status(500).json({
+                return res.status(500).json({
                     error: err,
                     message: "Error removing movie from watchlist"
                 });
@@ -58,7 +58,7 @@ export default withApiAuthRequired(async function removeWatchlistMovie(req, res)
             });
         })
         .catch(err => {
-            res.status(500).json({
+            return res.status(500).json({
                 error: err,
                 message: "Error in user database"
             });
