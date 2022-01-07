@@ -19,6 +19,14 @@ html, body {
   justify-content: space-between;
 }
 
+.featured-media-card-actions {
+  padding: 5%;
+}
+
+.featured-media-card {
+  background-color: #335D89;
+}
+
 .provider-heading {
   color: #77ABBD;
 }
@@ -38,6 +46,15 @@ html, body {
   width: 50%;
 }
 .media-icon-buttons:hover {
+  color: #77ABBD;
+}
+
+.featured-media-icon-buttons {
+  color: #0F1C2E;
+  width: 50%;
+  height: 100%;
+}
+.featured-media-icon-buttons:hover {
   color: #77ABBD;
 }
 
@@ -96,8 +113,22 @@ html, body {
 #discover-container {
   color: #77ABBD;
 }
+#discover-container h1, #discover-container h2, #discover-container p {
+  color: #77ABBD;
+}
 
 #top-rated-container {
+  color: #77ABBD;
+}
+
+#watchlist-container {
+  color: #77ABBD;
+}
+#watchlist-container h1, #watchlist-container h2, #watchlist-container p {
+  color: #77ABBD;
+}
+
+#favorites-container {
   color: #77ABBD;
 }
 
