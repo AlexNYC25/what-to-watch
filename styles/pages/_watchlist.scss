@@ -1,0 +1,10 @@
+@use '../abstracts/colors';
+
+#watchlist-container {
+    color: colors.$primary-text;
+
+    h1, h2, p {
+        color: colors.$primary-text;
+    }
+}
+
