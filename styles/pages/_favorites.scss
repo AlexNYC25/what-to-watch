@@ -1,0 +1,5 @@
+@use '../abstracts/colors';
+
+#favorites-container {
+    color: colors.$primary-text;
+}
