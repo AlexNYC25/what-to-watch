@@ -49,19 +49,19 @@ let getTvShowDetails = (tvShowId) => {
         - message
     Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
 */
-export default withApiAuthRequired( async function getFavorites(req, res) {
+export default withApiAuthRequired( function getFavorites(req, res) {
 
     return new Promise((resolve, reject) => {
         if(req.method !== "GET") {
             res.status(405).json({message: "Method not allowed"});
         }
     
-        await dbConnect();
+        dbConnect();
     
         const session = getSession(req, res);
         const userId = session.user.name;
     
-        User.find({
+        User.findOne({
             email: userId
         }).then(user => {
     
@@ -96,14 +96,14 @@ export default withApiAuthRequired( async function getFavorites(req, res) {
                     resolve();
                 })
                 .catch(error => {
-                    res.status(500).json({
+                    return res.status(500).json({
                         error: error,
                         message: "Error getting tv show details"
                     });
                 })
             })
             .catch(error => {
-                res.status(500).json({
+                return res.status(500).json({
                     error: error,
                     message: "Error getting movie details"
                 });
@@ -111,7 +111,7 @@ export default withApiAuthRequired( async function getFavorites(req, res) {
     
             
         }).catch(error => {
-            res.status(500).json({
+            return res.status(500).json({
                 error: error,
                 message: "Error querying database"
             });

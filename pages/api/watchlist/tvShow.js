@@ -13,17 +13,22 @@ import User from "../../../models/User";
         - message
     Note: Route will be protected by Auth0, user is required to be logged in, user details will be retrieved from Auth0
 */
-export default withApiAuthRequired( async function saveMovieFavorite(req, res) {
+export default withApiAuthRequired( function saveMovieFavorite(req, res) {
 
     return new Promise((resolve, reject) => {
-        await dbConnect();
+
+        if (req.method !== "POST") {
+            return res.status(405).json({ message: "Method not allowed" });
+        }
+
+        dbConnect();
 
         const mediaId = req.body.mediaId
         const session = getSession(req, res);
     
         const userId = session.user.name
     
-        User.find({
+        User.findOne({
             email: userId
         })
         .then(user => {
