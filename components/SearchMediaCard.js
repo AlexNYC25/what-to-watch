@@ -18,7 +18,7 @@ export default function SearchMediaCard(props) {
                 sx={{maxWidth: 345}}
             >
                 <CardMedia
-                    className="search-card-image"
+                    className="card-image"
                     component="img"
                     image={props.imagePath ? `https://image.tmdb.org/t/p/w500/${props.imagePath}` : 'https://via.placeholder.com/300x450?text=Movie+Not+Found'}
                     title={props.title}
