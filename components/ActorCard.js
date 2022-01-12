@@ -14,7 +14,6 @@ export default function ActorCard(props){
                 alt={props.name}
             />
             <Typography
-                className="actor-card-image-name"
                 variant="body1"
             >
                 {props.name}
