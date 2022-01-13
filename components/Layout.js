@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { faUser, faCheck, faStar, faSignOutAlt, faSignInAlt, faSearch, faAward, faBookOpen } from '@fortawesome/free-solid-svg-icons'
 
+
 const drawerWidth = 240;
 
 export default function Layout(props) {
@@ -91,9 +92,9 @@ export default function Layout(props) {
                         <ListItemIcon>
                             <FontAwesomeIcon icon={faSignOutAlt} />
                         </ListItemIcon>
-                        <Link href={'/logout'}>
+                        <a href={'/api/auth/logout'}>
                             <ListItemText primary="Logout" />
-                        </Link>
+                        </a>
                     </ListItem>
                     <Divider />
                     {drawerConstantItems}
@@ -107,9 +108,9 @@ export default function Layout(props) {
                             <FontAwesomeIcon icon={faSignInAlt} />
                         </ListItemIcon>
                         
-                        <Link href={"/api/auth/login"}>
+                        <a href={"/api/auth/login"}>
                             <ListItemText primary="Log In" />
-                        </Link>
+                        </a>
                         
                     </ListItem>
                     <Divider />
@@ -132,7 +133,7 @@ export default function Layout(props) {
     const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
-        <Box  sx={{ display: 'flex' }}>
+        <Box id='app-container' sx={{ display: 'flex' }}>
             <AppBar
                 position="fixed"
                 sx={{
