@@ -1,5 +1,9 @@
 import Layout from "../../components/Layout";
-import { Container, Grid, Typography, CircularProgress, IconButton } from "@mui/material";
+import ActorCard from "../../components/ActorCard";
+import ProviderLogo from "../../components/ProviderLogo";
+import MovieImageCard from "../../components/MovieImageCard";
+
+import { Container, Grid, Typography, IconButton, Tooltip, Snackbar, Alert } from "@mui/material";
 import { CircularProgressbar } from "react-circular-progressbar"
 
 import 'react-circular-progressbar/dist/styles.css';
@@ -10,7 +14,7 @@ import { useState, useEffect } from "react";
 import { useUser } from "@auth0/nextjs-auth0";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faFilm } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faClipboardList } from "@fortawesome/free-solid-svg-icons";
 
 
 export default function Movie() {
@@ -20,6 +24,10 @@ export default function Movie() {
     const {user, error, isLoading} = useUser();
 
     const [movieData, setMovieData] = useState(null);
+
+    const [alert, setAlert] = useState(false);
+    const [alertType, setAlertType] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     let getMovie = async () => {
         const res = await axios.get(`/api/movie/${id}`);
@@ -38,6 +46,11 @@ export default function Movie() {
         getMovie();
     }, [router.isReady]);
 
+
+    let handleClose = (event) => {
+        setAlert(false);
+    }
+
     let handleMovieButtonClick = (id, categoryType) => {
         if(!user) {
             return
@@ -53,7 +66,7 @@ export default function Movie() {
             }
         }
         ).catch(err => {
-            if(err.response.status === 400 || err.response.status === 500){
+            if(err?.response.status === 400 || err?.response.status === 500){
                 setAlert(true);
                 setAlertType('error');
                 setAlertMessage('Error Occured: ' + err.response.data.message);
@@ -62,51 +75,52 @@ export default function Movie() {
     }
 
     return (
-        <Layout style={{}}>
-            <Container sx={{mt:10, mb:5}}>
+        <Layout>
+            <Container id="media-container" sx={{mt:10, mb:5}}>
                 <Grid container spacing={3}>
-                    <Grid item sm={3} md={2} lg={3} xl={3}>
+                    <Grid item sm={12} md={4} lg={3} xl={3}>
                         <img src={ 'https://image.tmdb.org/t/p/w500/' + movieData?.data.movie.poster_path} alt={movieData?.title} style={{maxWidth: '100%', maxHeight:'100%'}}/> 
                         <div>
                             <Container id="movie-favorite-watchlist-buttons">
-                                    <IconButton
-                                        aria-label="add to favorites"
-                                        disabled={user ? false : true}
-                                        onClick={() => {
-                                            handleMovieButtonClick(movieData?.data.movie.id, 'favorite');
-                                        }}
-                                        style={{
-                                            width: '50%'
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faStar} size="2x"/>
-                                    </IconButton>
+                                    <Tooltip title="Add to Favorites">
+                                        <IconButton
+                                            className="media-icon-buttons"
+                                            aria-label="add to favorites"
+                                            disabled={user ? false : true}
+                                            onClick={() => {
+                                                handleMovieButtonClick(movieData?.data.movie.id, 'favorites');
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faStar} size="2x"/>
+                                        </IconButton>
+                                    </Tooltip>
 
-                                    <IconButton
-                                        aria-label="add to watchlist"
-                                        disabled={user ? false : true}
-                                        onClick={() => {
-                                            handleMovieButtonClick(movieData?.data.movie.id, 'watchlist');
-                                        }}
-                                        style={{
-                                            width: '50%'
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faFilm} size="2x" />
-                                    </IconButton>
-                                </Container>
-                            <CircularProgressbar value={movieData?.data.movie.vote_average * 10} text={`${movieData?.data.movie.vote_average * 10}`} />
+                                    <Tooltip title="Add to Watchlist">
+                                        <IconButton
+                                            className="media-icon-buttons"
+                                            aria-label="add to watchlist"
+                                            disabled={user ? false : true}
+                                            onClick={() => {
+                                                handleMovieButtonClick(movieData?.data.movie.id, 'watchlist');
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faClipboardList} size="2x" />
+                                        </IconButton>
+                                    </Tooltip>
+
+                                    <CircularProgressbar value={movieData?.data.movie.vote_average * 10} text={`${movieData?.data.movie.vote_average * 10}`} />
+                            </Container>
                         </div>
                     </Grid>
 
-                    <Grid item lg={9}>
+                    <Grid item md={8} lg={9}>
 
                         <Grid container spacing={5}>
 
-                            <Grid id="movie-properties" item lg={4}>
+                            <Grid item lg={4}>
                                 <Typography variant="h4">{movieData?.data.movie.title}</Typography>
                                 <Typography variant="h6">{ "Release Date: " + new Date(movieData?.data.movie.release_date).toDateString().split(" ").slice(1, 4).join(' ')}</Typography>
-                                <Typography variant="h6">{"Director: " + movieData?.data.credits.crew.filter( crewMember => crewMember.job == "Director").map(crewMember => crewMember.name).join(', ')} </Typography>
+                                <Typography variant="h6">{ "Director: " + movieData?.data.credits.crew.filter( crewMember => crewMember.job == "Director").map(crewMember => crewMember.name).join(', ')} </Typography>
                                 <Typography variant="h6">{ "Runtime: " + movieData?.data.movie.runtime + " minutes"}</Typography>
                                 <Typography variant="h6">{ "Genre: " + movieData?.data.movie.genres.map(genre => genre.name).join(", ")}</Typography>
                                 
@@ -119,9 +133,7 @@ export default function Movie() {
                                         <Grid container>
                                             {movieData?.data.watchProviders?.results.US?.flatrate.map(provider => {
                                                 return (
-                                                    <Grid item lg={1} key={provider.provider_key} sx={{mx:0.5}}>
-                                                        <img src={'https://image.tmdb.org/t/p/w500/' + provider.logo_path} alt={provider.provider_name} style={{maxWidth: '100%', maxHeight:'100%', borderRadius: '50%'}}/>
-                                                    </Grid>
+                                                    <ProviderLogo provider_key={provider.provider_key} provider_name={provider.provider_name} logo_path={provider.logo_path}/>
                                                 )
                                             })}
                                         </Grid>
@@ -134,9 +146,7 @@ export default function Movie() {
                                         <Grid container>
                                             {movieData?.data.watchProviders?.results.US?.buy.map(buy => {
                                                 return (
-                                                    <Grid item lg={1} key={buy.provider_id} sx={{mx:0.5}}>
-                                                        <img src={'https://image.tmdb.org/t/p/w500/' + buy.logo_path} alt={buy.provider_name} style={{maxWidth: '100%', maxHeight:'100%', borderRadius: '50%'}}/>
-                                                    </Grid>
+                                                    <ProviderLogo provider_id={buy.provider_id} provider_name={buy.provider_name} logo_path={buy.logo_path}/>
                                                 )
                                             })}
                                         </Grid>
@@ -149,9 +159,7 @@ export default function Movie() {
                                         <Grid container>
                                             {movieData?.data.watchProviders?.results.US?.rent.map(rent => {
                                                 return (
-                                                    <Grid item lg={1} key={rent.provider_id} sx={{mx:0.5}}>
-                                                        <img src={'https://image.tmdb.org/t/p/w500/' + rent.logo_path} alt={rent.provider_name} style={{maxWidth: '100%', maxHeight:'100%', borderRadius: '50%'}}/>
-                                                    </Grid>
+                                                    <ProviderLogo provider_id={rent.provider_id} provider_name={rent.provider_name} logo_path={rent.logo_path}/>
                                                 )
                                             })}
                                         </Grid>
@@ -161,7 +169,7 @@ export default function Movie() {
                                 
                             </Grid> 
 
-                            <Grid item lg={12}>
+                            <Grid item lg={12} sx={{my: 2}}>
                                 <Typography variant="h6">Movie Synopsis</Typography>
                                 <Typography variant="body1">{movieData?.data.movie.overview}</Typography>
                             </Grid>
@@ -171,30 +179,32 @@ export default function Movie() {
                         
                         <Grid container spacing={1}>
                             {movieData?.data.credits.cast.map(cast => (
-                                <Grid item key={cast.id} md={2} lg={2}>
-                                    <img src={ 'https://image.tmdb.org/t/p/w500/' + cast.profile_path} alt={cast.name} style={{maxWidth: '100%', maxHeight:'100%'}}/>
-                                    <Typography variant="body1">{cast.name}</Typography>
-                                </Grid>
+                                <ActorCard key={cast.id} profile_path={cast.profile_path} name={cast.name} />
+                                
                             )).slice(0, 6)}
                         </Grid>
 
                     </Grid>
 
-                    <Grid item lg={12}>
-                        <Typography variant="h6">Similar Movies</Typography>
+                    <Grid item md={12} lg={12}>
+                        <Typography id="similar-movie-heading" variant="h6">Similar Movies</Typography>
                         <Grid container spacing={1}>
                             {movieData?.data.recommendations?.results.map(similar => (
-                                <Grid item key={similar.id} md={2} lg={2}>
-                                    <a href={'/movie/' + similar.id}>
-                                        <img src={ 'https://image.tmdb.org/t/p/w500/' + similar.poster_path} alt={similar.title} style={{maxWidth: '100%', maxHeight:'100%'}}/>
-                                    </a>
-                                </Grid>
+                                <MovieImageCard id={similar.id} title={similar.title} poster_path={similar.poster_path}/>
                             )).slice(0, 6)}
                         </Grid>
                     </Grid>
 
                 </Grid>
             </Container>
+
+            <Snackbar
+                open={alert}
+                autoHideDuration={6000}
+                onClose={handleClose}
+            >
+                <Alert onClose={handleClose} severity={alertType}>{alertMessage}</Alert>
+            </Snackbar>
         </Layout>
     );
 }
