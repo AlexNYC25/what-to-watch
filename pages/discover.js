@@ -57,16 +57,15 @@ export default function Discover() {
 
   return (
 	<Layout>
-		
-		<Container sx={{mt:10, mb:5}}>
-			<h1 className="discover-media-heading">Discover</h1>
-			<h2 className="discover-media-heading">Trending Movies</h2>
+		<Container id="discover-container" sx={{mt:10, mb:5}}>
+			<h1>Discover</h1>
+			<h2>Trending Movies</h2>
 			<Grid container spacing={2}>
 				{movies.map(item => (
 					<DiscoverCard mediaType="movie" title={item.title ? item.title : item.name} id={item.id} imagePath={item.poster_path} />
 				))}
 			</Grid>
-			<h2 className="discover-media-heading">Trending Tv Shows</h2>
+			<h2>Trending Tv Shows</h2>
 			<Grid container spacing={2}>
 				
 				{tvShows.map(item => (
